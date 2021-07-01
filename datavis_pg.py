@@ -78,11 +78,13 @@ class Datavis:
         con=pymysql.connect(host="localhost",user="root",password="home4444",database="credit_card_system")
         cur=con.cursor()
         quer= "select * from customers where " + self.cmb_search.get()+ " like '%" +self.txt_search.get() + "'"
-        cur.execute(quer)
+        df= pd.read_sql_query(quer,con)
+        print(df)
+        #cur.execute(quer)
         con.commit()
         con.close()
-        self.result = cur.fetchall()
-        print(self.result)
+        #self.result = cur.fetchall()
+        #print(self.result)
         #print(self.cmb_search.get())
         
 
