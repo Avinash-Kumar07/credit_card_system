@@ -5,16 +5,12 @@ from tkinter import ttk, messagebox
 from mysql.connector import connection
 from tkcalendar import *
 import pymysql
-import os
-import mysql.connector
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from icecream import ic
 from sql_queries import *
 import approve_cust_pg
-import login_pg
 
 class Datavis:
     def __init__(self,root):
@@ -97,10 +93,6 @@ class Datavis:
         self.tree_cust.heading("CC_STATUS",text="CC_STATUS")
         self.tree_cust.heading("PHONE",text="PHONE")
 
-    def clear_search(self):
-            for i in self.tree_cust.get_children():
-                self.tree_cust.delete(i)
-
     def search_cust(self):
         for i in self.tree_cust.get_children():
             self.tree_cust.delete(i)
@@ -161,7 +153,7 @@ class Datavis:
         plt.show()
 
 
-def call_datavis():
+def call_datavis_pg():
     root = Tk()
     global obj4
     obj4 = Datavis(root)

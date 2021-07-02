@@ -90,7 +90,6 @@ class Login:
         con.close()
 
 def call_login_pg():
-    datavis_pg.obj4.root.destroy()
     root=Tk()
     global obj1
     obj1=Login(root)
@@ -102,4 +101,4 @@ def cust_call():
 
 def call_datavis():
     obj1.root.destroy()
-    datavis_pg.call_datavis()
+    datavis_pg.call_datavis_pg()
