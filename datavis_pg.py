@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from icecream import ic
 from sql_queries import *
+import approve_cust_pg
+import login_pg
 
 class Datavis:
     def __init__(self,root):
@@ -26,6 +28,8 @@ class Datavis:
         bg=Label(self.root,image=self.logo,bd=0).place(x=0,y=0)
 
         #___Top row links_________________________________________________________________
+        home_btn=Button(self.root,text="HOME",bd=0,cursor="hand2").place(x=558,y=8)
+
         lgt_btn=Button(self.root,text="Logout",bd=0,cursor="hand2").place(x=635,y=8)
         
         abtus_btn=Button(self.root,text="About Us",bd=0,cursor="hand2").place(x=712,y=8)
@@ -39,7 +43,6 @@ class Datavis:
         df = pd.read_sql_query(q1,con)
         con.commit()
         con.close()
-        #print(df.countofc[1])
         
         no_of_approved=Label(self.root,text="No of Approved Customers:",font=("arial",15,"bold"),bg="#31a6ff",fg="Black").place(x=500,y=100)
         no_approved=Label(self.root,text=str(df.countofc[0]),font=("arial",15,"bold"),bg="#31a6ff",fg="Black").place(x=800,y=100)
@@ -62,32 +65,57 @@ class Datavis:
 
         income_type_bttn= Button(self.root,text="Income Type",bd=2,cursor="hand2",command=self.disp_income_type).place(x=100,y=250)
 
-        approve_pg_bttn= Button(self.root,text="Approve Customers",bd=2,cursor="hand2").place(x=500,y=450)
+        approve_pg_bttn= Button(self.root,text="Approve Customers",bd=2,cursor="hand2",command=call_approve_cust_pg).place(x=500,y=500)
 
         #____________SEARCH_________________________________________________________________________
-        search=Label(self.root,text="Search Customers",font=("arial",15),bg="#31a6ff",fg="Black").place(x=100,y=350)
-        search_bttn= Button(self.root,text="Search",bd=2,cursor="hand2",command=self.search_cust).place(x=760,y=350)
+        search=Label(self.root,text="Search Customers",font=("arial",15),bg="#31a6ff",fg="Black").place(x=100,y=300)
+        search_bttn= Button(self.root,text="Search",bd=2,cursor="hand2",command=self.search_cust).place(x=760,y=300)
         self.txt_search=Entry(self.root,font=("Arial",15))
-        self.txt_search.place(x=280,y=350,width=200)
+        self.txt_search.place(x=280,y=300,width=200)
         self.cmb_search=ttk.Combobox(self.root,font=("Arial",15),state="readonly",justify=CENTER)
         self.cmb_search['values']=("Select","FIRST_NAME","LAST_NAME","ACC_ID","EMAIL","CC_STATUS")
-        self.cmb_search.place(x=500,y=350,width=250)
+        self.cmb_search.place(x=500,y=300,width=250)
         self.cmb_search.current(0)
     
+        #____________tree view________________________________________________________________
+        self.tree_cust=ttk.Treeview(self.root,show="headings",height="5")
+        self.tree_cust.place(y=340)
+        self.tree_cust['columns'] = ("ACC_ID","ACC_NAME","DOB","EMAIL","INCOME","CC_STATUS","PHONE")
+        self.tree_cust.column("ACC_ID",anchor=E,width=120)
+        self.tree_cust.column("ACC_NAME",anchor=W,width=180)
+        self.tree_cust.column("DOB",anchor=E,width=100)
+        self.tree_cust.column("EMAIL",anchor=W,width=230)
+        self.tree_cust.column("INCOME",anchor=E,width=110)
+        self.tree_cust.column("CC_STATUS",anchor=W,width=150)
+        self.tree_cust.column("PHONE",anchor=E,width=130)
+
+        self.tree_cust.heading("ACC_ID",text="ACC_ID")
+        self.tree_cust.heading("ACC_NAME",text="ACC_NAME")
+        self.tree_cust.heading("DOB",text="DOB")
+        self.tree_cust.heading("EMAIL",text="EMAIL")
+        self.tree_cust.heading("INCOME",text="INCOME")
+        self.tree_cust.heading("CC_STATUS",text="CC_STATUS")
+        self.tree_cust.heading("PHONE",text="PHONE")
+
+    def clear_search(self):
+            for i in self.tree_cust.get_children():
+                self.tree_cust.delete(i)
+
     def search_cust(self):
+        for i in self.tree_cust.get_children():
+            self.tree_cust.delete(i)
         con=pymysql.connect(host="localhost",user="root",password="home4444",database="credit_card_system")
         cur=con.cursor()
-        quer= "select * from customers where " + self.cmb_search.get()+ " like '%" +self.txt_search.get() + "'"
-        df= pd.read_sql_query(quer,con)
-        print(df)
-        #cur.execute(quer)
+        quer= "select ACC_ID,concat(FIRST_NAME,' ',LAST_NAME) as NAME,DOB,EMAIL,INCOME,CC_STATUS,PHONE from customers where " + self.cmb_search.get()+ " like '%" +self.txt_search.get() + "'"
+        cur.execute(quer)
+        self.rows = cur.fetchall()
+        total = cur.rowcount
         con.commit()
         con.close()
-        #self.result = cur.fetchall()
-        #print(self.result)
-        #print(self.cmb_search.get())
-        
 
+        for i in self.rows:
+            self.tree_cust.insert('','end',values=i)
+        
     def disp_ccstatus(self):
         con=pymysql.connect(host="localhost",user="root",password="home4444",database="credit_card_system")
         df = pd.read_sql_query(q1,con)
@@ -139,4 +167,6 @@ def call_datavis():
     obj4 = Datavis(root)
     root.mainloop()
 
-call_datavis()
+def call_approve_cust_pg():
+    obj4.root.destroy()
+    approve_cust_pg.call_approve_cust()

@@ -27,6 +27,8 @@ class Approve_cust:
         bg=Label(self.root,image=self.logo,bd=0).place(x=0,y=0)
 
         #___Top row links_________________________________________________________________
+        home_btn=Button(self.root,text="HOME",bd=0,cursor="hand2").place(x=558,y=8)
+        
         lgt_btn=Button(self.root,text="Logout",bd=0,cursor="hand2").place(x=635,y=8)
         
         abtus_btn=Button(self.root,text="About Us",bd=0,cursor="hand2").place(x=712,y=8)
@@ -81,6 +83,7 @@ class Approve_cust:
             cust_data.append(self.tree_cust.item(i)['values'])
         global acc
         acc = cust_data
+        obj5.root.destroy()
         approve_pg.call_approve()
 
 
@@ -89,5 +92,3 @@ def call_approve_cust():
     global obj5
     obj5 = Approve_cust(root)
     root.mainloop()
-
-#call_approve_cust()

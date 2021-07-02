@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkcalendar import *
 from applyc_pg import *
 import customer_home_pg
+import datavis_pg
 
 class Login:
     def __init__(self,root):
@@ -13,12 +14,11 @@ class Login:
         self.root.geometry("1024x576+1+1")
         self.root.config(bg="#ffffff")
        
-        #___BG Image____
+        #___BG Image___________________________________________________________________________________
         self.bg=ImageTk.PhotoImage(file="Images/login_bg.png")
         bg=Label(self.root,image=self.bg).place(relheight=1,relwidth=1)
 
-        #___Top row links____
-        
+        #___Top row links_________________________________________________________________________________
         abtus_btn=Button(self.root,text="About Us",bd=0,cursor="hand2").place(x=712,y=8)
         
         cntus_btn=Button(self.root,text="Contact Us",bd=0,cursor="hand2").place(x=800,y=8)
@@ -44,11 +44,35 @@ class Login:
 
         #___Login Button______
         self.lgn_btn=ImageTk.PhotoImage(file="Images/login_bttn.png")
-        lgn_btn=Button(frame1,image=self.lgn_btn,bd=0,cursor="hand2",command=self.register_data).place(x=270,y=260)
+        lgn_btn=Button(frame1,image=self.lgn_btn,bd=0,cursor="hand2",command=self.cust_or_emp_lgn).place(x=270,y=260)
 
         self.lgn_msg=Label(frame1,text="",font=("arial",15,"bold"),bg="#31a6ff",fg="Red")
         self.lgn_msg.place(x=270,y=320)
-        
+
+    def cust_or_emp_lgn(self):
+        if len(self.txt_username.get())>6:
+            self.register_data()
+        else:
+            self.emp_login()
+    
+    def emp_login(self):
+        emp_id_entered = int(self.txt_username.get())
+        con=pymysql.connect(host="localhost",user="root",password="home4444",database="credit_card_system")
+        cur=con.cursor()
+        cur.execute("select * from employees where EMP_ID='%s'",emp_id_entered)
+        result = cur.fetchall()
+        if len(result) != 0:
+            global lgn_id
+            lgn_id = emp_id_entered
+            self.lgn_msg.configure(text="Login Successfull")
+            call_datavis()
+        else:
+            self.lgn_msg.configure(text="Invalid User")
+        con.commit()
+        con.close()
+#*****************************************************Pending function above********************************
+
+
     def register_data(self):
         lgn_id_entered = int(self.txt_username.get())
         con=pymysql.connect(host="localhost",user="root",password="home4444",database="credit_card_system")
@@ -66,6 +90,7 @@ class Login:
         con.close()
 
 def call_login_pg():
+    datavis_pg.obj4.root.destroy()
     root=Tk()
     global obj1
     obj1=Login(root)
@@ -74,3 +99,7 @@ def call_login_pg():
 def cust_call():
     obj1.root.destroy()
     customer_home_pg.call_cust_home_pg()
+
+def call_datavis():
+    obj1.root.destroy()
+    datavis_pg.call_datavis()

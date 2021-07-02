@@ -2,8 +2,8 @@ from tkinter import *
 from PIL import ImageTk
 from PIL import Image
 from tkinter import ttk, messagebox
-from mysql.connector import connection
 from tkcalendar import *
+from mysql.connector import connection
 import pymysql
 import os
 import mysql.connector
@@ -23,11 +23,13 @@ class Approve:
         self.root.config(bg="#31a6ff")
 
         #______Top Logo___________________________________________________________________
-        #self.logo=ImageTk.PhotoImage(file="Images/logo.png")
-        #self.bg=Label(self.root,image=self.logo,bd=0).place(x=0,y=0)
+        self.logo=ImageTk.PhotoImage(file="Images/logo.png")
+        bg=Label(self.root,image=self.logo,bd=0).place(x=0,y=0)
 
         #___Top row links_________________________________________________________________
-        lgt_btn=Button(self.root,text="Logout",bd=0,cursor="hand2",command=self.disp_data).place(x=635,y=8)
+        home_btn=Button(self.root,text="HOME",bd=0,cursor="hand2").place(x=558,y=8)
+        
+        lgt_btn=Button(self.root,text="Logout",bd=0,cursor="hand2").place(x=635,y=8)
         
         abtus_btn=Button(self.root,text="About Us",bd=0,cursor="hand2").place(x=712,y=8)
         
@@ -72,8 +74,12 @@ class Approve:
         self.txt_credit_limit = Label(self.root, text="", font=("times new roman", 18, "bold"), bg="#31a6ff")
         self.txt_credit_limit.place(x=700, y=270)
 
+        approve_btn=Button(self.root,text="Approve",bd=2,cursor="hand2",command=self.approve).place(x=500,y=370)
+        decline_btn=Button(self.root,text="Decline",bd=2,cursor="hand2",command=self.decline).place(x=500,y=420)
+        self.txt_status = Label(self.root, text="", font=("times new roman", 18, "bold"), bg="#31a6ff")
+        self.txt_status.place(x=500, y=470)
+
         self.result = approve_cust_pg.acc
-        #print(self.result)
 
         con = pymysql.connect(host="localhost", user="root",password="home4444", database="credit_card_system")
         cur = con.cursor()
@@ -81,6 +87,24 @@ class Approve:
         self.result2 = cur.fetchall()
         con.commit()
         con.close()
+
+        self.disp_data()
+
+    def approve(self):
+        con = pymysql.connect(host="localhost", user="root",password="home4444", database="credit_card_system")
+        cur = con.cursor()
+        cur.execute("update customers set CC_STATUS = 'Approved' where ACC_ID= '%s'",self.result[0][0])
+        con.commit()
+        con.close()
+        self.txt_status.configure(text="Approved")
+
+    def decline(self):
+        con = pymysql.connect(host="localhost", user="root",password="home4444", database="credit_card_system")
+        cur = con.cursor()
+        cur.execute("update customers set CC_STATUS = 'Declined' where ACC_ID= '%s'",self.result[0][0])
+        con.commit()
+        con.close()
+        self.txt_status.configure(text="Declined")
 
     def disp_data(self):
         self.txt_acc_id.configure(text=self.result[0][0])
@@ -98,4 +122,3 @@ def call_approve():
     global obj6
     obj6 = Approve(root)
     root.mainloop()
-#call_approve()

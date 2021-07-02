@@ -8,10 +8,12 @@ q2 = "select timestampdiff(YEAR,DOB,curdate()) as age, INCOME from customers"
 q3 = "select timestampdiff(YEAR,DOB,curdate()) as age, avg(INCOME) as INCOME from customers group by age"
 
 # Income Type
-q4="select INCOME_TYPE,count(*) as countofc from customers group by INCOME_TYPE"
+q4 = "select INCOME_TYPE,count(*) as countofc from customers group by INCOME_TYPE"
 
-q5="select count(*) as hascar from customers where CAR='Y'"
-q6="select count(*) as hascar from customers where REALTY='Y'"
-q7="select count(*) as hascar from customers where CAR='Y' and REALTY = 'Y'"
+q5 = "select count(*) as hascar from customers where CAR='Y'"
+q6 = "select count(*) as hascar from customers where REALTY='Y'"
+q7 = "select count(*) as hascar from customers where CAR='Y' and REALTY = 'Y'"
 
-q8="select * from card_applications"
+q8 = "select * from card_applications"
+
+q9 = ""
